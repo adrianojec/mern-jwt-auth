@@ -1,15 +1,32 @@
 import "dotenv/config";
 import express from "express";
-import { NODE_ENV, PORT } from "./constants/env";
+import cors from "cors";
+import { APP_ORIGIN, NODE_ENV, PORT } from "./constants/env";
 import connectToDatabase from "./config/db";
+import cookieParser from "cookie-parser";
+import errorHandler from "./middleware/errorHandler";
+import catchErrors from "./utils/catchErrors";
+import { OK } from "./constants/httpStatus";
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.status(200).json({
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: APP_ORIGIN,
+    credentials: true,
+  })
+);
+app.use(cookieParser());
+
+app.get("/health", (_, res) => {
+  res.status(OK).json({
     status: "healthy",
   });
 });
+
+app.use(errorHandler);
 
 app.listen(PORT, async () => {
   console.log(`Server started on port ${PORT} in ${NODE_ENV} environment`);
