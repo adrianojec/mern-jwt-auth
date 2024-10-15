@@ -1,4 +1,7 @@
-import express, { Request, Response } from "express";
+import "dotenv/config";
+import express from "express";
+import { NODE_ENV, PORT } from "./constants/env";
+import connectToDatabase from "./config/db";
 
 const app = express();
 
@@ -8,6 +11,7 @@ app.get("/", (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log("Server started on port 3000 in development environment");
+app.listen(PORT, async () => {
+  console.log(`Server started on port ${PORT} in ${NODE_ENV} environment`);
+  await connectToDatabase();
 });
